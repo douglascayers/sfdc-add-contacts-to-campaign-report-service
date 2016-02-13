@@ -9,8 +9,8 @@
         <name>CustomObject</name>
     </types>
     <types>
-        <members>unfiled$public/Contact_Campaign_List_Report</members>
+        <members>unfiled$public/Add_Contacts_to_Campaign_Report_Test</members>
         <name>Report</name>
     </types>
-    <version>34.0</version>
+    <version>36.0</version>
 </Package>
