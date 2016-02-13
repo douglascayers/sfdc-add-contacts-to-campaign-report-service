@@ -1,6 +1,6 @@
 public class AddContactsToCampaignReportService {
 
-	public void execute( Reports.ReportInstance reportInstance ) {
+    public void execute( Reports.ReportInstance reportInstance ) {
         execute( reportInstance.getReportResults(), reportInstance.getReportId() );
     }
 
