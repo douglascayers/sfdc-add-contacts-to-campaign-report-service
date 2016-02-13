@@ -8,5 +8,9 @@
         <members>AddContactsToCampaignReportSettings__c</members>
         <name>CustomObject</name>
     </types>
+    <types>
+        <members>unfiled$public/Contact_Campaign_List_Report</members>
+        <name>Report</name>
+    </types>
     <version>34.0</version>
 </Package>
