@@ -1,3 +1,6 @@
+/**
+ * https://github.com/DouglasCAyers/sfdc-add-contacts-to-campaign-report-service
+ */
 public class AddContactsToCampaignReportService {
 
     public void execute( Reports.ReportInstance reportInstance ) {
@@ -25,7 +28,7 @@ public class AddContactsToCampaignReportService {
     private void addContactsToCampaign( Set<ID> contactIds, ID campaignId ) {
 
         System.debug( 'Adding contacts to campaign=' + campaignId + ', contactIds=' + contactIds );
-        
+
         List<CampaignMember> campaignMembers = new List<CampaignMember>();
 
         for ( ID contactId : contactIds ) {
@@ -54,28 +57,33 @@ public class AddContactsToCampaignReportService {
     private Set<ID> getNewContactIdsToAddToCampaign( Reports.ReportFactWithDetails reportDetails, ID campaignId ) {
 
         System.debug( 'Analyzing report and current campaign members to determine new contacts to add' );
-        
+
         // determine which contacts are already members of this campaign
         Map<ID, Boolean> campaignContactExistsMap = buildCampaignContactExistsMap( campaignId );
 
         Set<ID> contactIds = new Set<ID>();
 
         for ( Reports.ReportDetailRow row : reportDetails.getRows() ) {
-            
+
             System.debug( row );
-            
+
             for ( Reports.ReportDataCell cell : row.getDataCells() ) {
 
+                // each cell has a 'label' and a 'value'
+                // the 'label' is what is displayed in the report to the user
+                // the 'value' is the record id the data comes from
                 ID contactId = (ID) cell.getValue();
+
+                Boolean isContactId = ( contactId.getSobjectType() == Contact.sObjectType );
                 Boolean contactExistsAsMember = campaignContactExistsMap.get( contactId );
 
-                if ( contactExistsAsMember == null || !contactExistsAsMember ) {
+                if ( isContactId && ( contactExistsAsMember == null || !contactExistsAsMember ) ) {
                     contactIds.add( contactId );
                 }
 
             }
         }
-        
+
         System.debug( 'New contact ids to add to campaign: ' + contactIds );
 
         return contactIds;
@@ -84,7 +92,7 @@ public class AddContactsToCampaignReportService {
     private Map<ID, Boolean> buildCampaignContactExistsMap( ID campaignId ) {
 
         System.debug( 'Building map of contacts already members of campaign=' + campaignId );
-        
+
         // Identify all existing campaign members that are contacts.
         // CampaignMember object does not support upsert, so we can only create or update.
         // As we iterate through the report rows, we will compare the contact id from report
@@ -97,21 +105,21 @@ public class AddContactsToCampaignReportService {
         }
 
         System.debug( 'Existing contact campaign members: ' + campaignContactExistsMap );
-        
+
         return campaignContactExistsMap;
     }
 
     private String getCampaignId( String reportId ) {
-       
+
         System.debug( 'Looking up campaign id from report id in custom setting: ' + reportId );
-        
+
         // Ensure we use the 15 character id to match the value in the custom setting
         // that the salesforce administrator configured, which they usually do by
         // copying from the end of the URL of the saved report.
         if ( reportId.length() > 15 ) {
             reportId = reportId.substring( 0, 15 );
         }
-        
+
         AddContactsToCampaignReportSettings__c settings = AddContactsToCampaignReportSettings__c.getInstance( reportId );
 
         if ( settings == null || String.isBlank( settings.campaign_id__c ) ) {
@@ -122,7 +130,7 @@ public class AddContactsToCampaignReportService {
         }
 
         System.debug( 'Campaign ID = ' + settings.campaign_id__c );
-        
+
         return settings.campaign_id__c;
     }
 

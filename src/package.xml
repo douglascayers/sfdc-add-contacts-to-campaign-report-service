@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>*</members>
+        <members>AddContactsToCampaignReportAction</members>
+        <members>AddContactsToCampaignReportActionTest</members>
+        <members>AddContactsToCampaignReportService</members>
+        <members>AddContactsToCampaignReportServiceTest</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -9,7 +12,8 @@
         <name>CustomObject</name>
     </types>
     <types>
-        <members>unfiled$public/Add_Contacts_to_Campaign_Report_Test</members>
+        <members>Add_Contacts_to_Campaign_Reports</members>
+        <members>Add_Contacts_to_Campaign_Reports/Add_Contacts_to_Campaign_Report_Test</members>
         <name>Report</name>
     </types>
     <version>36.0</version>
