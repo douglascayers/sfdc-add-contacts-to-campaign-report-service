@@ -71,17 +71,31 @@ public class AddContactsToCampaignReportService {
 
                 // each cell has a 'label' and a 'value'
                 // the 'label' is what is displayed in the report to the user
-                // the 'value' is the record id the data comes from
-                ID contactId = (ID) cell.getValue();
+                // the 'value' usually is the record id the data comes from
+                Object value = cell.getValue();
 
-                Boolean isContactId = ( contactId.getSobjectType() == Contact.sObjectType );
-                Boolean contactExistsAsMember = campaignContactExistsMap.get( contactId );
+                try {
 
-                if ( isContactId && ( contactExistsAsMember == null || !contactExistsAsMember ) ) {
-                    contactIds.add( contactId );
+                    // ocassionally the cell value is not the record id
+                    // so this might throw exception parsing string,
+                    // in which case we'll ignore this cell and check the next one
+                    ID contactId = Id.valueOf( String.valueOf( value ) );
+
+                    Boolean isContactId = ( contactId.getSobjectType() == Contact.sObjectType );
+                    Boolean contactExistsAsMember = campaignContactExistsMap.get( contactId );
+
+                    if ( isContactId && ( contactExistsAsMember == null || !contactExistsAsMember ) ) {
+                        contactIds.add( contactId );
+                    }
+
+                } catch ( Exception e ) {
+
+                    System.debug( LoggingLevel.WARN, 'Report cell value is not parseable as an ID: ' + cell );
+
                 }
 
             }
+
         }
 
         System.debug( 'New contact ids to add to campaign: ' + contactIds );
