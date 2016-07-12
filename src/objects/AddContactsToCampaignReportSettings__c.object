@@ -5,7 +5,7 @@
     <enableFeeds>false</enableFeeds>
     <fields>
         <fullName>Campaign_ID__c</fullName>
-        <caseSensitive>true</caseSensitive>
+        <caseSensitive>false</caseSensitive>
         <description>The 15 character campaign id, usually copied from the end of the URL of the campaign record.</description>
         <externalId>false</externalId>
         <inlineHelpText>The 15 character campaign id, usually copied from the end of the URL of the campaign record.</inlineHelpText>
@@ -14,7 +14,7 @@
         <required>true</required>
         <trackTrending>false</trackTrending>
         <type>Text</type>
-        <unique>true</unique>
+        <unique>false</unique>
     </fields>
     <label>Add Contact to Campaign Report Settings</label>
     <visibility>Public</visibility>
