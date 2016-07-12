@@ -9,7 +9,7 @@ public class AddContactsToCampaignReportService {
 
     public void execute( Reports.ReportResults reportResults, ID reportId ) {
 
-        // look up the campaign id that the contacts from this report
+        // look up the campaign id that the contacts/leads from this report
         // should be added as campaign members to
         ID campaignId = getCampaignId( reportId );
 
@@ -17,25 +17,28 @@ public class AddContactsToCampaignReportService {
         // http://salesforce.stackexchange.com/questions/49446/tabular-report-data-via-analytics-api/49449?stw=2#49449
         Reports.ReportFactWithDetails reportDetails = (Reports.ReportFactWithDetails) reportResults.getFactMap().get('T!T');
 
-        // determine the new contact ids from the report that aren't already campaign members
-        Set<ID> contactIds = getNewContactIdsToAddToCampaign( reportDetails, campaignId );
+        // determine the new contact/lead ids from the report that aren't already campaign members
+        Set<ID> contactAndLeadIds = getNewContactAndLeadIdsToAddToCampaign( reportDetails, campaignId );
 
-        // add the new contacts to the campaign
-        addContactsToCampaign( contactIds, campaignId );
+        addContactsAndLeadsToCampaign( contactAndLeadIds, campaignId );
 
     }
 
-    private void addContactsToCampaign( Set<ID> contactIds, ID campaignId ) {
+    private void addContactsAndLeadsToCampaign( Set<ID> contactAndLeadIds, ID campaignId ) {
 
-        System.debug( 'Adding contacts to campaign=' + campaignId + ', contactIds=' + contactIds );
+        System.debug( 'Adding contacts/leads to campaign=' + campaignId + ', contactAndLeadIds=' + contactAndLeadIds );
 
         List<CampaignMember> campaignMembers = new List<CampaignMember>();
 
-        for ( ID contactId : contactIds ) {
+        for ( ID recordId : contactAndLeadIds ) {
+
+            Boolean isContactId = ( recordId.getSobjectType() == Contact.sObjectType );
+            Boolean isLeadId    = ( recordId.getSobjectType() == Lead.sObjectType );
 
             campaignMembers.add( new CampaignMember(
                 campaignId = campaignId,
-                contactId = contactId
+                contactId = ( isContactId ) ? recordId : null,
+                leadId = ( isLeadId ) ? recordId : null
             ));
 
             if ( campaignMembers.size() >= 200 ) {
@@ -54,14 +57,14 @@ public class AddContactsToCampaignReportService {
 
     }
 
-    private Set<ID> getNewContactIdsToAddToCampaign( Reports.ReportFactWithDetails reportDetails, ID campaignId ) {
+    private Set<ID> getNewContactAndLeadIdsToAddToCampaign( Reports.ReportFactWithDetails reportDetails, ID campaignId ) {
 
-        System.debug( 'Analyzing report and current campaign members to determine new contacts to add' );
+        System.debug( 'Analyzing report and current campaign members to determine new contacts/leads to add' );
 
-        // determine which contacts are already members of this campaign
-        Map<ID, Boolean> campaignContactExistsMap = buildCampaignContactExistsMap( campaignId );
+        // determine which contacts/leads are already members of this campaign
+        Map<ID, Boolean> campaignMemberExistsMap = buildCampaignMemberExistsMap( campaignId );
 
-        Set<ID> contactIds = new Set<ID>();
+        Set<ID> contactAndLeadIds = new Set<ID>();
 
         for ( Reports.ReportDetailRow row : reportDetails.getRows() ) {
 
@@ -79,13 +82,14 @@ public class AddContactsToCampaignReportService {
                     // ocassionally the cell value is not the record id
                     // so this might throw exception parsing string,
                     // in which case we'll ignore this cell and check the next one
-                    ID contactId = Id.valueOf( String.valueOf( value ) );
+                    ID recordId = Id.valueOf( String.valueOf( value ) );
 
-                    Boolean isContactId = ( contactId.getSobjectType() == Contact.sObjectType );
-                    Boolean contactExistsAsMember = campaignContactExistsMap.get( contactId );
+                    Boolean isContactId = ( recordId.getSobjectType() == Contact.sObjectType );
+                    Boolean isLeadId    = ( recordId.getSobjectType() == Lead.sObjectType );
+                    Boolean recordExistsAsMember = campaignMemberExistsMap.get( recordId );
 
-                    if ( isContactId && ( contactExistsAsMember == null || !contactExistsAsMember ) ) {
-                        contactIds.add( contactId );
+                    if ( ( isContactId || isLeadId ) && ( recordExistsAsMember == null || !recordExistsAsMember ) ) {
+                        contactAndLeadIds.add( recordId );
                     }
 
                 } catch ( Exception e ) {
@@ -98,12 +102,17 @@ public class AddContactsToCampaignReportService {
 
         }
 
-        System.debug( 'New contact ids to add to campaign: ' + contactIds );
+        System.debug( 'New contact/lead ids to add to campaign: ' + contactAndLeadIds );
 
-        return contactIds;
+        return contactAndLeadIds;
     }
 
-    private Map<ID, Boolean> buildCampaignContactExistsMap( ID campaignId ) {
+    /**
+     * Queries the members from the campaign and returns a map whose key
+     * are the contact or lead ids of the campaign members.
+     * The value in the map is always true.
+     */
+    private Map<ID, Boolean> buildCampaignMemberExistsMap( ID campaignId ) {
 
         System.debug( 'Building map of contacts already members of campaign=' + campaignId );
 
@@ -113,14 +122,22 @@ public class AddContactsToCampaignReportService {
         // to this map and only capture the contacts that need to be added to the campaign.
         // This will prevent us from trying to insert an existing association and get error.
         // https://success.salesforce.com/ideaview?id=08730000000DaEyAAK
-        Map<ID, Boolean> campaignContactExistsMap = new Map<ID, Boolean>();
-        for ( CampaignMember member : [select contactId from campaignMember where campaignId = :campaignId and contactId != null]) {
-            campaignContactExistsMap.put( member.contactId, true );
+        Map<ID, Boolean> campaignMemberExistsMap = new Map<ID, Boolean>();
+        for ( CampaignMember member : [ SELECT contactId, leadId FROM CampaignMember WHERE campaignId = :campaignId ] ) {
+
+            if ( String.isNotBlank( member.contactId ) ) {
+                campaignMemberExistsMap.put( member.contactId, true );
+            }
+
+            if ( String.isNotBlank( member.leadId ) ) {
+                campaignMemberExistsMap.put( member.leadId, true );
+            }
+
         }
 
-        System.debug( 'Existing contact campaign members: ' + campaignContactExistsMap );
+        System.debug( 'Existing contact/lead campaign members: ' + campaignMemberExistsMap );
 
-        return campaignContactExistsMap;
+        return campaignMemberExistsMap;
     }
 
     private String getCampaignId( String reportId ) {
