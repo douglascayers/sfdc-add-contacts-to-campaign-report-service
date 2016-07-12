@@ -14,8 +14,7 @@ Installation
 ===============
 You can easily install these components to your org straight from github or as an unmanaged package.
 * [Deploy from Github](https://githubsfdeploy.herokuapp.com)
-* [Production URL](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tj0000001aZie)
-* [Sandbox URL](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tj0000001aZie)
+* [See Releases](https://github.com/DouglasCAyers/sfdc-add-contacts-to-campaign-report-service/releases)
 
 
 Getting Started
