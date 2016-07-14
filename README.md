@@ -20,13 +20,15 @@ You can easily install these components to your org straight from github or as a
 Getting Started
 ===============
 
+*Despite the wording (add contacts to campaign...), this solution supports both Contact and Lead reports.*
+
 1) Deploy these customizations to your sandbox or developer org to test out first. You can use the [Deploy to Salesforce](https://githubsfdeploy.herokuapp.com?owner=douglascayers&repo=sfdc-add-contacts-to-campaign-report-service) button at the top of this page.
 
-2) Create a **Contact** report in `Tabular` format. `Summary`, `Matrix` or other complex report formats are not supported by this package at this time.
+2) Create a report in `Tabular` format that contains at least one field from a **Contact** or **Lead**. Please note, `Summary`, `Matrix` or other complex report formats are not supported by this package at this time.
 
 ![tabular format](/images/customize_report_tabular.png)
 
-3) Create a **Campaign** that you want the contacts from the report to be added to as members whenever the report runs.
+3) Create a **Campaign** that you want the contacts/leads from the report to be added to as members whenever the report runs.
 
 4) Go to **Setup | Develop | Custom Settings** and click `Manage` link next to **Add Contact to Campaign Report Settings**.
 
@@ -42,8 +44,8 @@ Getting Started
 
 ![subscribe](/images/subscribe_to_report.png)
 
-7) On the Report Subscription page, this is where you request how often you want your Contact report to run (e.g. weekdays at 3am) and when you want to be notified (e.g. when record count is greater than zero) and then how you want to be notified when those conditions are met (e.g. chatter post, email, execute a custom action). You can choose as many notification actions you want, but for our usage you must minimally choose `Execute a Custom Action` and select the apex class **AddContactsToCampaignReportAction**.
+7) On the Report Subscription page, this is where you request how often you want your Contact/Lead report to run (e.g. weekdays at 3am) and when you want to be notified (e.g. when record count is greater than zero) and then how you want to be notified when those conditions are met (e.g. chatter post, email, execute a custom action). You can choose as many notification actions you want, but for our usage you must minimally choose `Execute a Custom Action` and select the apex class **AddContactsToCampaignReportAction**. Remember, despite my original branding here (add contacts to campaign...) this supports Contacts and Leads.
 
 ![report subscription](/images/report_subscription.png)
 
-8) To test the subscription, click the **Save & Run Now** button. If successful then your campaign should now include all the contacts from the report.
+8) To test the subscription, click the **Save & Run Now** button. If successful then your campaign should now include all the contacts/leads from the report.
