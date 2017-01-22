@@ -1,6 +1,20 @@
 Add Contacts to Campaign via Report Subscription
 ================================================
 
+---------------------------------------
+
+**IMPORTANT: I have a new and improved project at https://github.com/DouglasCAyers/sfdc-add-campaign-members-by-report**
+
+**I recommend everyone to switch to the new project as it has more features, most notably support for reports with more than 2,000 records.**
+
+This is my initial implementation of the Add Contacts / Leads from a Report to a Campaign Service.
+
+Major drawback was being limited by the 2,000 records in the Apex Analytics API.
+
+The new project uses the [SalesforceFoundation](https://github.com/SalesforceFoundation) [ReportService](https://github.com/SalesforceFoundation/CampaignTools/blob/master/src/classes/ReportService.cls) as part of their [CampaignTools](https://github.com/SalesforceFoundation/CampaignTools) package to support all records in a report beyond the 2,000 limit.
+
+---------------------------------------
+
 This package uses the [Apex Analytics API](https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_namespace_Reports.htm) to add contacts from a report as campaign members.
 
 **Tammie Silber** [asked on the Success Community](https://success.salesforce.com/0D530000025g9zg) if it was possible to have new contacts automatically added to her campaign based on a daily report she had scheduled.
