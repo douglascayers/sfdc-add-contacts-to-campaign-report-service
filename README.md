@@ -12,9 +12,8 @@ Speaking of flexibility, this package does utilize a **custom setting** to contr
 
 Installation
 ===============
-You can easily install these components to your org straight from github or as an unmanaged package.
+
 * [Deploy from Github](https://githubsfdeploy.herokuapp.com)
-* [See Releases](https://github.com/DouglasCAyers/sfdc-add-contacts-to-campaign-report-service/releases)
 
 
 Getting Started
