@@ -27,6 +27,9 @@ Speaking of flexibility, this package does utilize a **custom setting** to contr
 Installation
 ===============
 
+**IMPORTANT: I have a new and improved project at https://github.com/DouglasCAyers/sfdc-add-campaign-members-by-report**
+
+But if you insist, you can deploy this old project via:
 * [Deploy from Github](https://githubsfdeploy.herokuapp.com)
 
 
